@@ -71,7 +71,7 @@ export const handleApiResponse = <T>(
 ): {
   status: boolean;
   message: string;
-  data?: T | null;
+  data: T;
   errors?: Record<string, string[]>;
 } => {
   return {
