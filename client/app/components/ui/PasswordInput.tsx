@@ -3,7 +3,7 @@ import { Input } from "../shdcn/ui/input";
 import { cn } from "@/app/utils/utils";
 import { Eye, EyeOff } from "lucide-react";
 
-const PasswordInput: FC<ComponentProps<"input">> = ({
+const PasswordInput: FC<Omit<ComponentProps<"input">, "type">> = ({
   className,
   ...props
 }) => {

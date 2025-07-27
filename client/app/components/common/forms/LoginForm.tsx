@@ -10,30 +10,44 @@ import {
 } from "../../shdcn/ui/form";
 import { Input } from "../../shdcn/ui/input";
 import { Button } from "../../shdcn/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import PasswordInput from "../../ui/PasswordInput";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema, loginSchema } from "@/app/schema/loginSchema";
+import useAuth from "@/app/hooks/useAuth";
+import Link from "next/link";
+import { Checkbox } from "../../shdcn/ui/checkbox";
 
 const LoginForm = () => {
-  const loginForm = useForm({
+  const { loading, login } = useAuth();
+
+  const form = useForm({
+    resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
     defaultValues: {
       email: "",
       password: "",
+      rememberMe: false,
     },
   });
 
-  const handleLogin = () => {};
+  const handleLogin = async (data: LoginSchema) => {
+    await login(data);
+  };
 
   return (
-    <Form {...loginForm}>
-      <form onSubmit={handleLogin} className="space-y-6">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
         <FormField
-          control={loginForm.control}
+          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>E-Mail</FormLabel>
               <FormControl>
                 <Input
+                  disabled={loading}
+                  type="email"
                   placeholder="Please enter your e-mail address"
                   {...field}
                 />
@@ -43,13 +57,14 @@ const LoginForm = () => {
           )}
         />
         <FormField
-          control={loginForm.control}
+          control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <PasswordInput
+                  disabled={loading}
                   placeholder="Please enter your password"
                   {...field}
                 />
@@ -58,12 +73,50 @@ const LoginForm = () => {
             </FormItem>
           )}
         />
-        <div className="flex justify-end">
-          <Button variant="ghost" size="lg">
-            Login
-            <ChevronRight size={18} />
-          </Button>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/forgot-password"
+            className="text-xs text-blue-300 underline
+          "
+          >
+            Forgot your password?
+          </Link>
+          <FormField
+            control={form.control}
+            name="rememberMe"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <div className="inline-flex items-center gap-2">
+                    <Checkbox
+                      id="rememberMe"
+                      disabled={loading}
+                      checked={!!field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <FormLabel htmlFor="rememberMe" className="cursor-pointer">
+                      Remember Me
+                    </FormLabel>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
+        <Button disabled={loading} type="submit" size="lg" className="w-full">
+          {loading ? (
+            <>
+              Logging in...
+              <Loader2 size={20} className="animate-spin" />
+            </>
+          ) : (
+            <>
+              Sign in
+              <ChevronRight size={20} />
+            </>
+          )}
+        </Button>
       </form>
     </Form>
   );

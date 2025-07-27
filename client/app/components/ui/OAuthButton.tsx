@@ -1,30 +1,41 @@
 "use client";
 import { OAuthButtonProps } from "@/app/types/OAuthButtonProps";
 import { cn } from "@/app/utils/utils";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { FC } from "react";
 
 const OAuthButton: FC<OAuthButtonProps> = ({
-  iconSrc,
-  name,
+  provider,
   onClick,
-  className,
-  ...props
+  loading,
+  disabled,
 }) => {
   return (
     <button
       onClick={onClick}
-      {...props}
+      disabled={disabled || loading}
       className={cn(
-        "cursor-pointer w-full px-4 py-2 rounded-md flex items-center gap-3 border transition-colors duration-200",
-        "bg-[#1E1E20] border-[#2a2a2e] text-[#e4e4e7]",
-        "hover:border-[#3a3a3d] hover:bg-[#252529]",
-        "focus:outline-none focus:ring-1 focus:ring-[#3f3f46]",
-        className
+        "cursor-pointer w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border transition-all",
+        "bg-darkness border-gray-charcoal text-white",
+        "hover:bg-gray-charcoal hover:border-white/20",
+        "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-dark-gray",
+        "disabled:opacity-50 disabled:cursor-not-allowed"
       )}
     >
-      <Image src={iconSrc} alt={name} width={20} height={20} />
-      <span className="font-medium">{name}</span>
+      {loading ? (
+        <Loader2 className="w-5 h-5 animate-spin" />
+      ) : (
+        <>
+          <Image
+            src={provider.icon}
+            alt={provider.name}
+            width={18}
+            height={18}
+          />
+          <span className="font-medium">Continue with {provider.name}</span>
+        </>
+      )}
     </button>
   );
 };

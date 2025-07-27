@@ -8,7 +8,7 @@ const SearchContent = () => {
         <p className="font-bold text-xs text-white-alpha">Today</p>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -26,7 +26,7 @@ const SearchContent = () => {
         </Link>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -44,7 +44,7 @@ const SearchContent = () => {
         </Link>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -65,7 +65,7 @@ const SearchContent = () => {
         <p className="font-bold text-xs text-white-alpha">Past week</p>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -83,7 +83,7 @@ const SearchContent = () => {
         </Link>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -101,7 +101,7 @@ const SearchContent = () => {
         </Link>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -122,7 +122,7 @@ const SearchContent = () => {
         <p className="font-bold text-xs text-white-alpha">Past 30 days</p>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -140,7 +140,7 @@ const SearchContent = () => {
         </Link>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
@@ -158,7 +158,7 @@ const SearchContent = () => {
         </Link>
         <Link
           href="/"
-          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-gray-charcoal rounded-md p-2"
+          className="flex items-center justify-between group transition-all duration-300 ease-in-out hover:bg-white/10 rounded-md p-2"
         >
           <div className="flex items-center gap-3">
             <NotebookPen
