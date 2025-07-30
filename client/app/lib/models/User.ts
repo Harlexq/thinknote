@@ -4,5 +4,6 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber: number;
-  phoneCountryCode: number;
+  phoneCountyId: number;
+  phoneCountryCode: string;
 }

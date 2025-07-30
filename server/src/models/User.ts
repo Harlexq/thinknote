@@ -1,7 +1,5 @@
-// src/models/user.model.ts
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcryptjs";
-import { IUserDocument } from "../types/auth.types";
+import { IUserDocument } from "../types/auth";
 
 const userSchema = new Schema<IUserDocument>(
   {
@@ -60,17 +58,5 @@ const userSchema = new Schema<IUserDocument>(
     versionKey: false,
   }
 );
-
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
-});
-
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
 
 export const User = mongoose.model<IUserDocument>("User", userSchema);

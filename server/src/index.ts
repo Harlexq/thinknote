@@ -1,74 +1,49 @@
-import { Elysia } from "elysia";
-import { swagger } from "@elysiajs/swagger";
-import database from "./config/database";
-import { errorHandlerMiddleware } from "./middlewares/errorHandlerMiddleware";
-import { routes } from "./routes";
+import { Elysia, t } from "elysia";
+import logger from "./services/getLogger";
+import * as databaseService from "./services/database";
+
+import authRouter from "./routes/auth";
+import countriesRouter from "./routes/countries";
+
+import swagger from "@elysiajs/swagger";
+import pkg from "../package.json";
 import cors from "@elysiajs/cors";
+import config from "../config";
+
+await databaseService.default.connectDB();
 
 const app = new Elysia()
-  .use(
-    cors({
-      origin: "http://localhost:3000",
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    })
-  )
-  .use(errorHandlerMiddleware)
+  .use(cors({
+    origin: config.frontend.url
+  }))
   .use(
     swagger({
-      path: "/swagger",
+      path: "/docs",
       documentation: {
         info: {
-          title: "ThinkNote API",
-          version: "1.0.0",
-          description: "ThinkNote application REST API documentation",
+          title: "ThinkNote API Documentation",
+          version: pkg.version,
         },
         tags: [
-          { name: "auth", description: "Authentication endpoints" },
-          { name: "countries", description: "Countries endpoints" },
+          { name: "App", description: "General endpoints" },
+          { name: "Auth", description: "Authentication endpoints" },
         ],
-        components: {
-          securitySchemes: {
-            bearerAuth: {
-              type: "http",
-              scheme: "bearer",
-              bearerFormat: "JWT",
-            },
-          },
-        },
       },
     })
   )
-  .get("/", () => ({
-    message: "Welcome to ThinkNote API",
-    version: "1.0.0",
-    documentation: "/swagger",
-  }))
-  .get("/health", () => ({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-  }))
-  .group("/api", (app) => app.use(routes))
-  .listen({
-    port: 8080,
-    hostname: "0.0.0.0",
-    idleTimeout: 60,
-    development: process.env.NODE_ENV !== "production",
-  });
-
-database
-  .connect()
-  .then(() => {
-    console.log(
-      `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
-    );
-    console.log(
-      `📚 Swagger documentation available at http://localhost:8080/swagger`
-    );
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+  .get("/", () => "Yes the API is working sucessfully! 👀", {
+    detail: {
+      tags: ["App"],
+    },
   })
-  .catch((error) => {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  });
+  .use(authRouter)
+  .use(countriesRouter)
+  .onStart(() => {
+    logger.info(`The server is started succesfully.`);
+    logger.info(`Is production: ${!!Bun.env.NODE_ENV}`); // alternatively you can use !config.debug
+  })
+  .listen(8888);
+
+console.log(
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+);

@@ -3,6 +3,7 @@ import search from "./slices/searchSlice";
 import auth from "./slices/authSlice";
 import profile from "./slices/profileSlice";
 import country from "./slices/countrySlice";
+import language from "./slices/languageSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     auth,
     profile,
     country,
+    language,
   },
 });
 

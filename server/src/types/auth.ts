@@ -1,4 +1,3 @@
-// src/types/auth.types.ts
 import { Document, Types } from "mongoose";
 
 export interface IUser {
@@ -42,7 +41,7 @@ export interface ITokenPayload {
 export interface IAuthTokens {
   accessToken: string;
   refreshToken: string;
-  maxAge: number; // saniye cinsinden
+  maxAge: number;
 }
 
 export interface IRegisterDto {
@@ -52,7 +51,7 @@ export interface IRegisterDto {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  phoneCountryId: number; // phoneCountryCode yerine phoneCountryId
+  phoneCountryId: number;
 }
 
 export interface ILoginDto {
