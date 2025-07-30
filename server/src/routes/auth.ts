@@ -29,64 +29,81 @@ const refreshTokenSchema = t.Object({
   refreshToken: t.String(),
 });
 
-const generateRefreshToken = () => crypto.randomBytes(64).toString('hex');
+const generateRefreshToken = () => crypto.randomBytes(64).toString("hex");
 
-const createTokens = async (userId: string, rememberMe: boolean, thinknote: any) => {
+const createTokens = async (
+  userId: string,
+  rememberMe: boolean,
+  thinknote: any
+) => {
   const refreshTokenExpiry = rememberMe ? 30 : 7;
-  
-  const accessToken = await thinknote.sign({ 
+
+  const accessToken = await thinknote.sign({
     id: userId,
-    exp: Math.floor(Date.now() / 1000) + (rememberMe ? 604800 : 86400)
+    exp: Math.floor(Date.now() / 1000) + (rememberMe ? 604800 : 86400),
   });
-  
+
   const refreshToken = generateRefreshToken();
-  
+
   await RefreshToken.create({
     userId,
     token: refreshToken,
-    expiresAt: new Date(Date.now() + refreshTokenExpiry * 24 * 60 * 60 * 1000)
+    expiresAt: new Date(Date.now() + refreshTokenExpiry * 24 * 60 * 60 * 1000),
   });
-  
+
   return {
     accessToken,
     refreshToken,
-    maxAge: rememberMe ? 604800 : 86400
+    maxAge: rememberMe ? 604800 : 86400,
   };
 };
 
 const getLanguage = (acceptLanguageHeader?: string): Language => {
-  const languageCode = acceptLanguageHeader?.split(",")[0]?.split("-")[0] || config.language.default;
-  return (languageCode in AUTH_MESSAGES ? languageCode : config.language.default) as Language;
+  const languageCode =
+    acceptLanguageHeader?.split(",")[0]?.split("-")[0] ||
+    config.language.default;
+  return (
+    languageCode in AUTH_MESSAGES ? languageCode : config.language.default
+  ) as Language;
 };
 
 const authRouter = new Elysia({ prefix: "/auth" })
   .use(jwtConfig)
   .post(
-    "/sign-in",
+    "/login",
     async ({ body, error, headers, thinknote }) => {
       const language = getLanguage(headers["accept-language"]);
-      
-      const user = await User.findOne({ email: body.email }).select('+password');
-      
+
+      const user = await User.findOne({ email: body.email }).select(
+        "+password"
+      );
+
       if (!user) {
         return error(401, {
           status: false,
           message: AUTH_MESSAGES[language].INVALID_CREDENTIALS,
         });
       }
-      
-      const isPasswordValid = await bcrypt.compare(body.password, user.password);
-      
+
+      const isPasswordValid = await bcrypt.compare(
+        body.password,
+        user.password
+      );
+
       if (!isPasswordValid) {
         return error(401, {
           status: false,
           message: AUTH_MESSAGES[language].INVALID_CREDENTIALS,
         });
       }
-      
+
       const country = await Country.findOne({ code: user.phoneCountryCode });
-      const tokens = await createTokens(user._id.toString(), body.rememberMe, thinknote);
-      
+      const tokens = await createTokens(
+        user._id.toString(),
+        body.rememberMe,
+        thinknote
+      );
+
       return {
         status: true,
         message: AUTH_MESSAGES[language].SIGN_IN_SUCCESS,
@@ -100,8 +117,8 @@ const authRouter = new Elysia({ prefix: "/auth" })
             phoneNumber: user.phoneNumber,
             phoneCountryId: country?.id || null,
             phoneCountryCode: user.phoneCountryCode,
-          }
-        }
+          },
+        },
       };
     },
     {
@@ -112,48 +129,57 @@ const authRouter = new Elysia({ prefix: "/auth" })
     }
   )
   .post(
-    "/sign-up",
+    "/register",
     async ({ body, error, headers, thinknote }) => {
       const language = getLanguage(headers["accept-language"]);
-      
+
       if (body.password !== body.confirmPassword) {
         return error(400, {
           status: false,
           message: AUTH_MESSAGES[language].PASSWORDS_DO_NOT_MATCH,
         });
       }
-      
+
       const existingUser = await User.findOne({ email: body.email });
-      
+
       if (existingUser) {
         return error(400, {
           status: false,
           message: AUTH_MESSAGES[language].USER_ALREADY_FOUND,
         });
       }
-      
+
       const session = await mongoose.startSession();
       session.startTransaction();
-      
+
       try {
         const hashedPassword = await bcrypt.hash(body.password, 10);
-        
+
         const phoneCountry = await Country.findOne({ id: body.phoneCountryId });
-        
-        const [newUser] = await User.create([{
-          email: body.email,
-          password: hashedPassword,
-          firstName: body.firstName,
-          lastName: body.lastName,
-          phoneNumber: body.phoneNumber,
-          phoneCountryCode: phoneCountry?.code,
-          isEmailVerified: false,
-        }], { session });
-        
-        const tokens = await createTokens(newUser._id.toString(), false, thinknote);
-        
+
+        const [newUser] = await User.create(
+          [
+            {
+              email: body.email,
+              password: hashedPassword,
+              firstName: body.firstName,
+              lastName: body.lastName,
+              phoneNumber: body.phoneNumber,
+              phoneCountryCode: phoneCountry?.code,
+              isEmailVerified: false,
+            },
+          ],
+          { session }
+        );
+
+        const tokens = await createTokens(
+          newUser._id.toString(),
+          false,
+          thinknote
+        );
+
         await session.commitTransaction();
-        
+
         return {
           status: true,
           message: AUTH_MESSAGES[language].SIGN_UP_SUCCESS,
@@ -166,13 +192,13 @@ const authRouter = new Elysia({ prefix: "/auth" })
               email: newUser.email,
               phoneNumber: newUser.phoneNumber,
               phoneCountryId: body.phoneCountryId,
-              phoneCountryCode: phoneCountry?.code || '',
-            }
+              phoneCountryCode: phoneCountry?.code || "",
+            },
           },
         };
       } catch (err) {
         await session.abortTransaction();
-        
+
         return error(500, {
           status: false,
           message: AUTH_MESSAGES[language].PROBLEM_CREATING_USER,
@@ -192,33 +218,33 @@ const authRouter = new Elysia({ prefix: "/auth" })
     "/refresh-token",
     async ({ body, error, headers, thinknote }) => {
       const language = getLanguage(headers["accept-language"]);
-      
-      const storedToken = await RefreshToken.findOne({ 
+
+      const storedToken = await RefreshToken.findOne({
         token: body.refreshToken,
-        expiresAt: { $gt: new Date() }
+        expiresAt: { $gt: new Date() },
       });
-      
+
       if (!storedToken) {
         return error(401, {
           status: false,
           message: AUTH_MESSAGES[language].INVALID_REFRESH_TOKEN,
         });
       }
-      
+
       await RefreshToken.deleteOne({ _id: storedToken._id });
-      
+
       const user = await User.findById(storedToken.userId);
-      
+
       if (!user) {
         return error(401, {
           status: false,
           message: AUTH_MESSAGES[language].USER_NOT_FOUND,
         });
       }
-      
+
       const country = await Country.findOne({ code: user.phoneCountryCode });
       const tokens = await createTokens(user._id.toString(), false, thinknote);
-      
+
       return {
         status: true,
         message: AUTH_MESSAGES[language].TOKEN_REFRESHED,
@@ -232,8 +258,8 @@ const authRouter = new Elysia({ prefix: "/auth" })
             phoneNumber: user.phoneNumber,
             phoneCountryId: country?.id || null,
             phoneCountryCode: user.phoneCountryCode,
-          }
-        }
+          },
+        },
       };
     },
     {

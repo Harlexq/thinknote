@@ -12,10 +12,12 @@ import config from "../config";
 
 await databaseService.default.connectDB();
 
-const app = new Elysia()
-  .use(cors({
-    origin: config.frontend.url
-  }))
+const app = new Elysia({ prefix: "/api" })
+  .use(
+    cors({
+      origin: config.frontend.url,
+    })
+  )
   .use(
     swagger({
       path: "/docs",
@@ -39,8 +41,8 @@ const app = new Elysia()
   .use(authRouter)
   .use(countriesRouter)
   .onStart(() => {
-    logger.info(`The server is started succesfully.`);
-    logger.info(`Is production: ${!!Bun.env.NODE_ENV}`); // alternatively you can use !config.debug
+    logger.info(`The server is started successfully.`);
+    logger.info(`Is production: ${!!Bun.env.NODE_ENV}`);
   })
   .listen(8888);
 
