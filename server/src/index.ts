@@ -1,23 +1,32 @@
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 import logger from "./services/getLogger";
 import * as databaseService from "./services/database";
-
 import authRouter from "./routes/auth";
 import countriesRouter from "./routes/countries";
-
 import swagger from "@elysiajs/swagger";
 import pkg from "../package.json";
-import cors from "@elysiajs/cors";
 import config from "../config";
 
 await databaseService.default.connectDB();
 
 const app = new Elysia({ prefix: "/api" })
-  .use(
-    cors({
-      origin: config.frontend.url,
-    })
-  )
+  .options("/*", ({ set }) => {
+    set.headers["Access-Control-Allow-Origin"] = config.frontend.url
+    set.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, PATCH, OPTIONS";
+    set.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+    set.headers["Access-Control-Allow-Credentials"] = "true";
+    set.headers["Access-Control-Max-Age"] = "86400";
+    return new Response(null, { status: 204 });
+  })
+  .derive(({ set }) => {
+    set.headers["Access-Control-Allow-Origin"] = config.frontend.url
+    set.headers["Access-Control-Allow-Credentials"] = "true";
+  })
+  .onError(({ set, error }) => {
+    set.headers["Access-Control-Allow-Origin"] = config.frontend.url
+    set.headers["Access-Control-Allow-Credentials"] = "true";
+    return { status: false };
+  })
   .use(
     swagger({
       path: "/docs",
