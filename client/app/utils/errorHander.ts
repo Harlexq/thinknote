@@ -1,4 +1,3 @@
-// app/utils/errorHandler.ts
 import { AxiosError } from "axios";
 import { ApiResponse, ApiErrorResponse } from "../lib/models/Api";
 
@@ -7,7 +6,6 @@ export const handleApiError = (error: unknown): string => {
     if (error.response?.data) {
       const apiResponse = error.response.data as ApiErrorResponse;
 
-      // Validation errors
       if (apiResponse.errors) {
         const firstError = Object.values(apiResponse.errors)[0];
         if (firstError && firstError.length > 0) {
@@ -20,7 +18,6 @@ export const handleApiError = (error: unknown): string => {
       }
     }
 
-    // HTTP status errors
     if (error.response) {
       switch (error.response.status) {
         case 400:
@@ -42,7 +39,6 @@ export const handleApiError = (error: unknown): string => {
       }
     }
 
-    // Network errors
     if (error.code === "ECONNABORTED") {
       return "İstek zaman aşımına uğradı. Lütfen tekrar deneyin.";
     }

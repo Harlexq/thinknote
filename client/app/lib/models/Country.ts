@@ -1,6 +1,7 @@
 import { ApiResponse } from "./Api";
 
 export interface Country {
+  _id: string;
   id: number;
   name: string;
   code: string;

@@ -1,7 +1,7 @@
 import { ApiResponse } from "./Api";
 
 export interface Language {
-  id: number;
+  _id: string;
   flag: string;
   name: string;
   iso: string;

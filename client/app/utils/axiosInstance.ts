@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (error) => {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       deleteCookie("accessToken");
       deleteCookie("refreshToken");
       if (typeof window !== "undefined") {

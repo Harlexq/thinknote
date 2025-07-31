@@ -1,33 +1,35 @@
-"use server";
+// utils/cookie.ts
+import Cookies from "js-cookie";
 
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
-import { cookies } from "next/headers";
+export interface CookieAttributes {
+  expires?: number | Date | undefined;
+  path?: string | undefined;
+  domain?: string | undefined;
+  secure?: boolean | undefined;
+  sameSite?: "strict" | "Strict" | "lax" | "Lax" | "none" | "None" | undefined;
+  [property: string]: unknown;
+}
 
-export const getCookie = async (name: string) => {
-  const cookieStore = await cookies();
-  return cookieStore.get(name);
+export const getCookie = (name: string) => {
+  return Cookies.get(name);
 };
 
-export const setAllCookie = async () => {
-  const cookieStore = await cookies();
-  return cookieStore.getAll();
+export const gelAllCookie = () => {
+  return Cookies.get();
 };
 
-export const hasCookie = async (name: string) => {
-  const cookieStore = await cookies();
-  return cookieStore.has(name);
+export const hasCookie = (name: string) => {
+  return Cookies.get(name) !== undefined;
 };
 
-export const setCookie = async (
+export const setCookie = (
   key: string,
   value: string,
-  options?: Partial<ResponseCookie>
+  options?: CookieAttributes
 ) => {
-  const cookieStore = await cookies();
-  return cookieStore.set(key, value, options);
+  return Cookies.set(key, value, options);
 };
 
-export const deleteCookie = async (key: string) => {
-  const cookieStore = await cookies();
-  return cookieStore.delete(key);
+export const deleteCookie = (key: string) => {
+  return Cookies.remove(key);
 };

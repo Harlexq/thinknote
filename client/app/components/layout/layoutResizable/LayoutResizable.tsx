@@ -61,7 +61,7 @@ const LayoutResizable = ({ children }: { children: ReactNode }) => {
         ) : null}
         <ResizablePanel defaultSize={isOpen ? 85 : 100} className="px-5">
           <Header />
-          <div>{children}</div>
+          <div className="max-w-4xl mx-auto">{children}</div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </TooltipProvider>
