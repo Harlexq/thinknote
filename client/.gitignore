@@ -17,6 +17,7 @@
 /.next/
 /out/
 
+bun.lock
 # production
 /build
 
